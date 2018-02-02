@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var rename = require('gulp-rename');
 var watchify = require('watchify');
-
 var babel = require('babelify');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
@@ -39,11 +38,8 @@ function compile(watch){
             rebundle();
         })
     }
-
     rebundle();
 }
-
-
 
 gulp.task('build', () =>{
     return compile();
