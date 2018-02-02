@@ -1,3 +1,11 @@
-var numeros = [400, 200, 100, 50, 25];
-var numerosMasUno = numeros.map(n =>  n + 1)
-console.log(numerosMasUno);
+var page = require('page');
+var main = document.getElementById('main-container');
+
+page('/', (ctx, next)=>{
+    main.innerHTML = 'Home <a href="/signup">SignUp</a>';
+});
+page('/signup', (ctx, next)=> {
+    main.innerHTML = 'SignUp <a href="/">Home</a>';
+});
+
+page();
