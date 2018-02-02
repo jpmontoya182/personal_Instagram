@@ -15,7 +15,6 @@ app.get('/signin', (req, res) => {
     res.render('index');
 });
 
-
 app.listen(3000, (err) => {
     if(err){
         return console.log('Server Error');
