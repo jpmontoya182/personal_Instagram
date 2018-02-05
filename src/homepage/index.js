@@ -1,6 +1,10 @@
 var page = require('page');
+var empty = require('empty-element');
+var template = require('./template');
+var title = require('title');
 
-page('/', (ctx, next)=>{
+page('/', (ctx, next)=> {
+    title('Instagram');
     var main = document.getElementById('main-container');   
-    main.innerHTML = '<a href="/signup">Signup</a>';
+    empty(main).appendChild(template);  
 });

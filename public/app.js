@@ -2640,6 +2640,148 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],15:[function(require,module,exports){
+// Utilities
+const lowerCase = require('./lower-case')
+const specials = require('./specials')
+
+const regex = /(?:(?:((?:^|[.!?;:"-])\s*)(\w))|(\w))(\w*)/g
+
+const convertToRegExp = specials => specials.map(s => [new RegExp(`\\b${s}\\b`, 'gi'), s])
+
+module.exports = (str, options = {}) => {
+  str = str.toLowerCase().replace(regex, (m, lead = '', forced, lower, rest) => {
+    if (!forced) {
+      const fullLower = lower + rest
+
+      if (lowerCase.has(fullLower)) {
+        return m
+      }
+    }
+
+    return lead + (lower || forced).toUpperCase() + rest
+  })
+
+  const customSpecials = options.special || []
+  const replace = [...specials, ...customSpecials]
+  const replaceRegExp = convertToRegExp(replace)
+
+  replaceRegExp.forEach(([pattern, s]) => {
+    str = str.replace(pattern, s)
+  })
+
+  return str
+}
+
+},{"./lower-case":16,"./specials":17}],16:[function(require,module,exports){
+const conjunctions = [
+  'for',
+  'and',
+  'nor',
+  'but',
+  'or',
+  'yet',
+  'so'
+]
+
+const articles = [
+  'a',
+  'an',
+  'the'
+]
+
+const prepositions = [
+  'aboard',
+  'about',
+  'above',
+  'across',
+  'after',
+  'against',
+  'along',
+  'amid',
+  'among',
+  'anti',
+  'around',
+  'as',
+  'at',
+  'before',
+  'behind',
+  'below',
+  'beneath',
+  'beside',
+  'besides',
+  'between',
+  'beyond',
+  'but',
+  'by',
+  'concerning',
+  'considering',
+  'despite',
+  'down',
+  'during',
+  'except',
+  'excepting',
+  'excluding',
+  'following',
+  'for',
+  'from',
+  'in',
+  'inside',
+  'into',
+  'like',
+  'minus',
+  'near',
+  'of',
+  'off',
+  'on',
+  'onto',
+  'opposite',
+  'over',
+  'past',
+  'per',
+  'plus',
+  'regarding',
+  'round',
+  'save',
+  'since',
+  'than',
+  'through',
+  'to',
+  'toward',
+  'towards',
+  'under',
+  'underneath',
+  'unlike',
+  'until',
+  'up',
+  'upon',
+  'versus',
+  'via',
+  'with',
+  'within',
+  'without'
+]
+
+module.exports = new Set([
+  ...conjunctions,
+  ...articles,
+  ...prepositions
+])
+
+},{}],17:[function(require,module,exports){
+const intended = [
+  'ZEIT',
+  'ZEIT Inc.',
+  'CLI',
+  'API',
+  'Next.js',
+  'Node.js',
+  'HTTP',
+  'HTTPS'
+]
+
+module.exports = intended
+
+},{}],18:[function(require,module,exports){
 var bel = require('bel') // turns template tag into DOM elements
 var morphdom = require('morphdom') // efficiently diffs + morphs two DOM elements
 var defaultEvents = require('./update-events.js') // default events to be copied when dom elements update
@@ -2683,7 +2825,7 @@ module.exports.update = function (fromNode, toNode, opts) {
   }
 }
 
-},{"./update-events.js":16,"bel":1,"morphdom":9}],16:[function(require,module,exports){
+},{"./update-events.js":19,"bel":1,"morphdom":9}],19:[function(require,module,exports){
 module.exports = [
   // attribute events (can be set with attributes)
   'onclick',
@@ -2721,15 +2863,33 @@ module.exports = [
   'onfocusout'
 ]
 
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var page = require('page');
+var empty = require('empty-element');
+var template = require('./template');
+var title = require('title');
 
 page('/', (ctx, next) => {
+    title('Instagram');
     var main = document.getElementById('main-container');
-    main.innerHTML = '<a href="/signup">Signup</a>';
+    empty(main).appendChild(template);
 });
 
-},{"page":12}],18:[function(require,module,exports){
+},{"./template":21,"empty-element":3,"page":12,"title":15}],21:[function(require,module,exports){
+var yo = require('yo-yo');
+var layaout = require('../layaout');
+
+var template = yo`<div class="container timeline">
+    <div class="row">
+        <div class="col s12 m10 offset-m1 l6 offset-l3">
+            content
+        </div>
+    </div>
+</div>`;
+
+module.exports = layaout(template);
+
+},{"../layaout":24,"yo-yo":18}],22:[function(require,module,exports){
 var page = require('page');
 
 require('./homepage');
@@ -2738,12 +2898,11 @@ require('./signin');
 
 page();
 
-},{"./homepage":17,"./signin":20,"./signup":22,"page":12}],19:[function(require,module,exports){
+},{"./homepage":20,"./signin":25,"./signup":27,"page":12}],23:[function(require,module,exports){
 var yo = require('yo-yo');
 
-module.exports = function landing(box) {
-    return;
-    yo`<div class="container">
+var result = function landing(box) {
+    return yo`<div class="container landing">
             <div class="row">
                 <div class="col s10 push-s1">
                     <div class="row">
@@ -2757,7 +2916,39 @@ module.exports = function landing(box) {
         </div>`;
 };
 
-},{"yo-yo":15}],20:[function(require,module,exports){
+module.exports = result;
+
+},{"yo-yo":18}],24:[function(require,module,exports){
+var yo = require('yo-yo');
+
+module.exports = function layaout(content) {
+    return yo`<div>
+        <nav class="header">
+            <div class="nav-wrapper">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 offset-m1">
+                            <a href="/" class="brand-logo Instagram">Instagram</a>
+                        </div>
+                        <div class="col s2 m6 push-s10 push-m10">
+                            <a href="#" class="btn btn-large btn-flat dropdown-button" data-activates="drop-user">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                            </a>
+                            <ul id="drop-user" class="dropdown-content">
+                                <li><a href="#">Salir</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </nav>
+        <div class="content">
+            ${content}
+        </div>
+    </div>`;
+};
+
+},{"yo-yo":18}],25:[function(require,module,exports){
 var page = require('page');
 var empty = require('empty-element');
 var template = require('./template');
@@ -2767,7 +2958,7 @@ page('/signin', (ctx, next) => {
     empty(main).appendChild(template);
 });
 
-},{"./template":21,"empty-element":3,"page":12}],21:[function(require,module,exports){
+},{"./template":26,"empty-element":3,"page":12}],26:[function(require,module,exports){
 var yo = require('yo-yo');
 var landing = require('../landing');
 
@@ -2778,7 +2969,7 @@ var signinForm = yo`<div class="col s12 m7">
             <form class="signup-form">
                 <div class="section">
                     <a class="btn btn-fb hide-on-small-only">Iniciar sesión con FB</a>
-                    <a class="btn btn-fb hide-on-med-and-up">Iniciar sesión</a>
+                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>Iniciar sesión</a>
                 </div>
                 <div class="divider"></div>
                 <div class="section">
@@ -2799,7 +2990,7 @@ var signinForm = yo`<div class="col s12 m7">
 
 module.exports = landing(signinForm);
 
-},{"../landing":19,"yo-yo":15}],22:[function(require,module,exports){
+},{"../landing":23,"yo-yo":18}],27:[function(require,module,exports){
 var page = require('page');
 var empty = require('empty-element');
 var template = require('./template');
@@ -2809,7 +3000,7 @@ page('/signup', (ctx, next) => {
     empty(main).appendChild(template);
 });
 
-},{"./template":23,"empty-element":3,"page":12}],23:[function(require,module,exports){
+},{"./template":28,"empty-element":3,"page":12}],28:[function(require,module,exports){
 var yo = require('yo-yo');
 var landing = require('../landing');
 
@@ -2821,7 +3012,7 @@ var signupForm = yo`<div class="col s12 m7">
                 <h2>Registrate para ver fotos</h2>
                 <div class="section">
                     <a class="btn btn-fb hide-on-small-only">Iniciar sesión con FB</a>
-                    <a class="btn btn-fb hide-on-med-and-up">Iniciar sesión</a>
+                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>Iniciar sesión</a>
                 </div>
                 <div class="divider"></div>
                 <div class="section">
@@ -2844,4 +3035,4 @@ var signupForm = yo`<div class="col s12 m7">
 
 module.exports = landing(signupForm);
 
-},{"../landing":19,"yo-yo":15}]},{},[18]);
+},{"../landing":23,"yo-yo":18}]},{},[22]);
