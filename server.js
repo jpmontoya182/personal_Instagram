@@ -5,14 +5,14 @@ app.set('view engine', 'pug');
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('index', { title : 'Instagram' });
 });
 app.get('/signup', (req, res) => {
-    res.render('index');
+    res.render('index', { title : 'Instagram - Signup' });
 });
 
 app.get('/signin', (req, res) => {
-    res.render('index');
+    res.render('index', { title : 'Instagram - Signin' });
 });
 
 app.listen(3000, (err) => {
