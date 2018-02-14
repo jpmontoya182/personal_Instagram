@@ -9859,6 +9859,36 @@ module.exports = [
 ]
 
 },{}],41:[function(require,module,exports){
+var yo = require('yo-yo');
+var translation = require('../translate');
+
+var el = yo`<footer class="side-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 l3 center-align">
+                <a href="#" class="dropdown-button btn btn-flat" data-activates="ddlLanguages">
+                    ${translation.message('language')}
+                </a>
+                <ul id="ddlLanguages" class="dropdown-content">
+                    <li><a href="#" onclick="${lang.bind(null, 'es')}"> ${translation.message('spanish')}</a></li>
+                    <li><a href="#" onclick="${lang.bind(null, 'en-US')}"> ${translation.message('english')}</a></li>
+                </ul>               
+            </div>
+            <div class="col s12 l3 push-l6 center-align">© 2018 Instagram</div>
+        </div>
+    </div>
+</footer>`;
+
+function lang(locale) {
+    console.log(locale);
+    localStorage.locale = locale;
+    location.reload();
+    return false;
+}
+
+document.body.appendChild(el);
+
+},{"../translate":54,"yo-yo":39}],42:[function(require,module,exports){
 var page = require('page');
 var empty = require('empty-element');
 var template = require('./template');
@@ -9884,12 +9914,21 @@ page('/', (ctx, next) => {
         url: 'https://www.shareicon.net/data/256x256/2015/12/07/683840_image_512x512.png',
         likes: 4,
         liked: false,
+        createAt: new Date().setDate(0)
+    }, {
+        user: {
+            username: 'Camilo Montoya',
+            avatar: 'https://www.shareicon.net/data/128x128/2016/08/18/810199_user_512x512.png'
+        },
+        url: 'https://www.shareicon.net/data/256x256/2015/12/07/683840_image_512x512.png',
+        likes: 0,
+        liked: false,
         createAt: new Date().setDate(-10)
     }];
     empty(main).appendChild(template(pictures));
 });
 
-},{"./template":42,"empty-element":3,"page":33,"title":36}],42:[function(require,module,exports){
+},{"./template":43,"empty-element":3,"page":33,"title":36}],43:[function(require,module,exports){
 var yo = require('yo-yo');
 var layaout = require('../layaout');
 var picture = require('../picture-card');
@@ -9907,16 +9946,17 @@ module.exports = function (pictures) {
     return layaout(el);
 };
 
-},{"../layaout":45,"../picture-card":46,"yo-yo":39}],43:[function(require,module,exports){
+},{"../layaout":46,"../picture-card":47,"yo-yo":39}],44:[function(require,module,exports){
 var page = require('page');
 
 require('./homepage');
 require('./signup');
 require('./signin');
+require('./footer');
 
 page();
 
-},{"./homepage":41,"./signin":47,"./signup":49,"page":33}],44:[function(require,module,exports){
+},{"./footer":41,"./homepage":42,"./signin":48,"./signup":50,"page":33}],45:[function(require,module,exports){
 var yo = require('yo-yo');
 
 var result = function landing(box) {
@@ -9936,8 +9976,9 @@ var result = function landing(box) {
 
 module.exports = result;
 
-},{"yo-yo":39}],45:[function(require,module,exports){
+},{"yo-yo":39}],46:[function(require,module,exports){
 var yo = require('yo-yo');
+var translation = require('../translate');
 
 module.exports = function layaout(content) {
     return yo`<div>
@@ -9953,7 +9994,7 @@ module.exports = function layaout(content) {
                                 <i class="fa fa-user" aria-hidden="true"></i>
                             </a>
                             <ul id="drop-user" class="dropdown-content">
-                                <li><a href="#">Salir</a></li>
+                                <li><a href="#">${translation.message('logout')}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -9966,20 +10007,9 @@ module.exports = function layaout(content) {
     </div>`;
 };
 
-},{"yo-yo":39}],46:[function(require,module,exports){
+},{"../translate":54,"yo-yo":39}],47:[function(require,module,exports){
 var yo = require('yo-yo');
-window.IntlRelativeFormat = require('intl-relativeformat');
-
-if (!window.Intl) {
-    window.Intl = require('intl');
-    require('intl/locale-data/jsonp/en-US.js');
-    require('intl/locale-data/jsonp/es.js');
-}
-
-require('intl-relativeformat/dist/locale-data/en.js');
-require('intl-relativeformat/dist/locale-data/es.js');
-
-var rf = new IntlRelativeFormat('es');
+var translation = require('../translate');
 
 module.exports = function (pic) {
     var el;
@@ -9994,11 +10024,11 @@ module.exports = function (pic) {
                     <img src="${picture.user.avatar}" class="avatar" />
                     <span class="username">${picture.user.username}</span>
                 </a>
-                <small class="rigth time">${rf.format(picture.createAt)}</small>
+                <small class="rigth time">${translation.date.format(picture.createAt)}</small>
                 <p>
                     <a class="left" href="#" onclick=${like.bind(null, true)}><i class="fa fa-heart-o" aria-hidden="true"></i></a>
                     <a class="left" href="#" onclick=${like.bind(null, false)}><i class="fa fa-heart" aria-hidden="true"></i></a>
-                    <span class="left likes">${picture.likes} me gusta</span>
+                    <span class="left likes">${translation.message('likes', { likes: picture.likes })}</span>
 
                 </p>
             </div>          
@@ -10017,7 +10047,7 @@ module.exports = function (pic) {
     return el;
 };
 
-},{"intl":25,"intl-relativeformat":19,"intl-relativeformat/dist/locale-data/en.js":17,"intl-relativeformat/dist/locale-data/es.js":18,"intl/locale-data/jsonp/en-US.js":27,"intl/locale-data/jsonp/es.js":28,"yo-yo":39}],47:[function(require,module,exports){
+},{"../translate":54,"yo-yo":39}],48:[function(require,module,exports){
 var page = require('page');
 var empty = require('empty-element');
 var template = require('./template');
@@ -10029,9 +10059,10 @@ page('/signin', (ctx, next) => {
     empty(main).appendChild(template);
 });
 
-},{"./template":48,"empty-element":3,"page":33,"title":36}],48:[function(require,module,exports){
+},{"./template":49,"empty-element":3,"page":33,"title":36}],49:[function(require,module,exports){
 var yo = require('yo-yo');
 var landing = require('../landing');
+var translation = require('../translate');
 
 var signinForm = yo`<div class="col s12 m7">
     <div class="row">
@@ -10039,29 +10070,29 @@ var signinForm = yo`<div class="col s12 m7">
             <h1 class="Instagram">Instagram</h1>
             <form class="signup-form">
                 <div class="section">
-                    <a class="btn btn-fb hide-on-small-only">Iniciar sesión con FB</a>
-                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>Iniciar sesión</a>
+                    <a class="btn btn-fb hide-on-small-only">${translation.message('signup.facebook')}</a>
+                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>${translation.message('signup.text')}</a>
                 </div>
                 <div class="divider"></div>
                 <div class="section">
-                    <input type="text" name="username" placeholder="Nombre de Usuario">
-                    <input type="password" name="password" placeholder="Contraseña">
-                    <button class="btn waves-effect waves-light btn-signup" type="submit">Iniciar Sesion</button>
+                    <input type="text" name="username" placeholder="${translation.message('username')}">
+                    <input type="password" name="password" placeholder="${translation.message('password')}">
+                    <button class="btn waves-effect waves-light btn-signup" type="submit">${translation.message('signup.text')}</button>
                 </div>
             </form>
         </div>
     </div>
     <div class="row">
         <div class="login-box">
-            ¿No tienes una cuenta?
-            <a href="/signup">Regístrate</a>
+            ${translation.message('signin.already-have-account')} 
+            <a href="/signup">${translation.message('signup.call-to-action')}</a>
         </div>
     </div>
 </div>`;
 
 module.exports = landing(signinForm);
 
-},{"../landing":44,"yo-yo":39}],49:[function(require,module,exports){
+},{"../landing":45,"../translate":54,"yo-yo":39}],50:[function(require,module,exports){
 var page = require('page');
 var empty = require('empty-element');
 var template = require('./template');
@@ -10073,39 +10104,115 @@ page('/signup', (ctx, next) => {
     empty(main).appendChild(template);
 });
 
-},{"./template":50,"empty-element":3,"page":33,"title":36}],50:[function(require,module,exports){
+},{"./template":51,"empty-element":3,"page":33,"title":36}],51:[function(require,module,exports){
 var yo = require('yo-yo');
 var landing = require('../landing');
+var translation = require('../translate');
 
 var signupForm = yo`<div class="col s12 m7">
     <div class="row">
         <div class="signup-box">
             <h1 class="Instagram">Instagram</h1>
             <form class="signup-form">
-                <h2>Registrate para ver fotos</h2>
+                <h2>${translation.message('signup.subheading')}</h2>
                 <div class="section">
-                    <a class="btn btn-fb hide-on-small-only">Iniciar sesión con FB</a>
-                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>Iniciar sesión</a>
+                    <a class="btn btn-fb hide-on-small-only">${translation.message('signup.facebook')}</a>
+                    <a class="btn btn-fb hide-on-med-and-up"><i class="fab fa-facebook"></i>${translation.message('signup.text')}</a>
                 </div>
                 <div class="divider"></div>
                 <div class="section">
-                    <input type="email" name="email" placeholder="Correo Electronico">
-                    <input type="text" name="name" placeholder="Nombre Completo">
-                    <input type="text" name="username" placeholder="Nombre de Usuario">
-                    <input type="password" name="password" placeholder="Contraseña">
-                    <button class="btn waves-effect waves-light btn-signup" type="submit">Registrate</button>
+                    <input type="email" name="email" placeholder="${translation.message('email')} ">
+                    <input type="text" name="name" placeholder="${translation.message('fullname')} ">
+                    <input type="text" name="username" placeholder="${translation.message('username')} ">
+                    <input type="password" name="password" placeholder="${translation.message('password')} ">
+                    <button class="btn waves-effect waves-light btn-signup" type="submit">${translation.message('signup.call-to-action')}</button>
                 </div>
             </form>
         </div>
     </div>
     <div class="row">
         <div class="login-box">
-            ¿Tienes una cuenta?
-            <a href="/signin">Entrar</a>
+            ${translation.message('signup.have-account')} 
+            <a href="/signin">${translation.message('signin')}</a>
         </div>
     </div>
 </div>`;
 
 module.exports = landing(signupForm);
 
-},{"../landing":44,"yo-yo":39}]},{},[43]);
+},{"../landing":45,"../translate":54,"yo-yo":39}],52:[function(require,module,exports){
+module.exports = {
+    likes: `{ likes, plural,
+        =0  { no likes }
+        =1  { # like}
+        other { # likes }
+    }`,
+    'logout': 'Logout',
+    'english': 'English',
+    'spanish': 'Spanish',
+    'signup.subheading': 'Sign up to see photos',
+    'signup.facebook': 'Sign up with FB',
+    'signup.text': 'Sign up',
+    'email': 'Email',
+    'fullname': 'FullName',
+    'username': 'Username',
+    'password': 'Password',
+    'signup.call-to-action': 'Signup',
+    'signup.have-account': '¿Already have an account?',
+    'signin': 'Signin',
+    'signin.already-have-account': '¿Don\'t have an account ?',
+    'language': 'Language'
+};
+
+},{}],53:[function(require,module,exports){
+module.exports = {
+    'likes': '{ likes, number } me gusta',
+    'logout': 'Salir',
+    'english': 'Ingles',
+    'spanish': 'Español',
+    'signup.subheading': 'Registrate para ver fotos',
+    'signup.facebook': 'Iniciar sesión con FB',
+    'signup.text': 'Iniciar sesion',
+    'email': 'Correo electrónico',
+    'fullname': 'Nombre completo',
+    'username': 'Nombre de usuario',
+    'password': 'Contraseña',
+    'signup.call-to-action': 'Registrate',
+    'signup.have-account': '¿Tienes una cuenta?',
+    'signin': 'Entrar',
+    'signin.already-have-account': '¿No tienes una cuenta?',
+    'language': 'Idioma'
+};
+
+},{}],54:[function(require,module,exports){
+window.IntlRelativeFormat = require('intl-relativeformat');
+window.IntlMessageFormat = require('intl-messageformat');
+
+if (!window.Intl) {
+    window.Intl = require('intl');
+    require('intl/locale-data/jsonp/en-US.js');
+    require('intl/locale-data/jsonp/es.js');
+}
+
+require('intl-relativeformat/dist/locale-data/en.js');
+require('intl-relativeformat/dist/locale-data/es.js');
+
+var es = require('./es');
+var en = require('./en-US');
+
+var messages = {};
+messages.es = es;
+messages['en-US'] = en;
+
+var locale = localStorage.locale || 'es';
+
+module.exports = {
+    message: function (text, opts) {
+        opts = opts || {};
+        var msg = new IntlMessageFormat(messages[locale][text], locale, null);
+        return msg.format(opts);
+    },
+    date: new IntlRelativeFormat(locale)
+};
+
+},{"./en-US":52,"./es":53,"intl":25,"intl-messageformat":10,"intl-relativeformat":19,"intl-relativeformat/dist/locale-data/en.js":17,"intl-relativeformat/dist/locale-data/es.js":18,"intl/locale-data/jsonp/en-US.js":27,"intl/locale-data/jsonp/es.js":28}]},{},[44]);

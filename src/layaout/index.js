@@ -1,4 +1,5 @@
 var yo = require('yo-yo');
+var translation = require('../translate');
 
 module.exports = function layaout (content){
     return yo`<div>
@@ -14,7 +15,7 @@ module.exports = function layaout (content){
                                 <i class="fa fa-user" aria-hidden="true"></i>
                             </a>
                             <ul id="drop-user" class="dropdown-content">
-                                <li><a href="#">Salir</a></li>
+                                <li><a href="#">${ translation.message('logout') }</a></li>
                             </ul>
                         </div>
                     </div>

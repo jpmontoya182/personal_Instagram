@@ -1,16 +1,5 @@
 var yo = require('yo-yo');
-window.IntlRelativeFormat = require('intl-relativeformat');
-
-if(!window.Intl){
-    window.Intl = require('intl');
-    require('intl/locale-data/jsonp/en-US.js');
-    require('intl/locale-data/jsonp/es.js');
-}
-
-require('intl-relativeformat/dist/locale-data/en.js');
-require('intl-relativeformat/dist/locale-data/es.js');
-
-var rf = new IntlRelativeFormat('es');
+var translation = require('../translate');
 
 module.exports = function(pic){
     var el;
@@ -21,15 +10,15 @@ module.exports = function(pic){
                 <img class="activator" src="${picture.url}">
             </div>
             <div class="card-content">
-                <a href="user/${picture.user.username}" class="card-title">
-                    <img src="${picture.user.avatar}" class="avatar" />
-                    <span class="username">${picture.user.username}</span>
+                <a href="user/${ picture.user.username }" class="card-title">
+                    <img src="${ picture.user.avatar }" class="avatar" />
+                    <span class="username">${ picture.user.username }</span>
                 </a>
-                <small class="rigth time">${rf.format(picture.createAt)}</small>
+                <small class="rigth time">${ translation.date.format(picture.createAt) }</small>
                 <p>
-                    <a class="left" href="#" onclick=${like.bind(null, true)}><i class="fa fa-heart-o" aria-hidden="true"></i></a>
-                    <a class="left" href="#" onclick=${like.bind(null, false)}><i class="fa fa-heart" aria-hidden="true"></i></a>
-                    <span class="left likes">${picture.likes} me gusta</span>
+                    <a class="left" href="#" onclick=${ like.bind(null, true) }><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+                    <a class="left" href="#" onclick=${ like.bind(null, false) }><i class="fa fa-heart" aria-hidden="true"></i></a>
+                    <span class="left likes">${ translation.message('likes', { likes: picture.likes }) }</span>
 
                 </p>
             </div>          
